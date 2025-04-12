@@ -151,12 +151,27 @@
                         [errorMessages]="{ required: 'Tax number is required.', minlength: 'Minimum length is 3.' }"
             >
             </input-text>
-            <input-text id="activityCode" formControlName="activityCode" placeholder="Activity Code"
-                        label="Activity Code" [disabledInput]="!isNewCompany"
-                        [formControlComp]="accountForm.controls['activityCode']"
-                        [errorMessages]="{ required: 'Activity code is required.', invalidActivityCode: 'Invalid activity code. :('  }"
-            >
-            </input-text>
+            <label class="custom-activity-code-label">Activity Code</label>
+            <mat-form-field appearance="outline" class="custom-activity-code">
+
+              <input type="text"
+                     matInput
+                     [formControl]="activityCodeControl"
+                     [matAutocomplete]="activityAuto"
+                     placeholder="Activity Code"
+                     [disabled]="!isNewCompany">
+              <mat-autocomplete #activityAuto="matAutocomplete">
+                <mat-option *ngFor="let code of filteredActivityCodes | async" [value]="code">
+                  {{ code }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error *ngIf="accountForm.get('activityCode')?.hasError('required')">
+                Activity code is required.
+              </mat-error>
+              <mat-error *ngIf="accountForm.get('activityCode')?.hasError('invalidActivityCode')">
+                Invalid activity code. :(
+              </mat-error>
+            </mat-form-field>
             <input-text id="companyAddress" formControlName="companyAddress" placeholder="Address"
                         label="Address" [disabledInput]="!isNewCompany"
                         [formControlComp]="accountForm.controls['companyAddress']"

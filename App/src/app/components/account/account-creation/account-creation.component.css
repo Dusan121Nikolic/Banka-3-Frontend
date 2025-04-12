@@ -1,0 +1,38 @@
+.custom-activity-code-label {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.custom-activity-code .mat-form-field-label {
+  display: none;
+}
+
+.custom-activity-code .mat-form-field-appearance-outline .mat-form-field-outline,
+.custom-activity-code .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+  display: none;
+}
+
+.custom-activity-code .mat-form-field-wrapper {
+  padding: 0;
+}
+
+.custom-activity-code .mat-input-element {
+  background-color: #f9fafb;
+  border: 1px solid #d1d5db;
+  color: #111827;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  padding: 0.625rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.custom-activity-code .mat-input-element:focus {
+  outline: none;
+  border-color: #510076;
+  box-shadow: 0 0 0 3px #8A54A3;
+}

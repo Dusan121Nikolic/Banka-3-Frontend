@@ -1,5 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators, ValidationErrors, AbstractControl} from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+  ValidationErrors,
+  AbstractControl,
+  FormControl
+} from '@angular/forms';
 import { ClientService } from '../../../services/client.service';
 import { AuthService } from '../../../services/auth.service';
 import { AccountService } from '../../../services/account.service';
@@ -14,11 +22,14 @@ import { Company, CreateCompany } from '../../../models/company.model';
 import { AuthorizedPersonnel, CreateAuthorizedPersonnel } from '../../../models/authorized-personnel.model';
 import { AuthorizedPersonnelService } from '../../../services/authorized-personnel.service';
 import { CardService, CreateCardDto } from '../../../services/card.service';
-import {NgForOf, NgIf, TitleCasePipe} from '@angular/common';
+import {AsyncPipe, NgForOf, NgIf, TitleCasePipe} from '@angular/common';
 import {ButtonComponent} from '../../shared/button/button.component';
 import {InputTextComponent} from '../../shared/input-text/input-text.component';
 import {ModalComponent} from '../../shared/modal/modal.component';
-
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import {map, Observable, startWith} from 'rxjs';
 @Component({
   selector: 'app-account-creation',
   templateUrl: './account-creation.component.html',
@@ -31,6 +42,10 @@ import {ModalComponent} from '../../shared/modal/modal.component';
     InputTextComponent,
     NgIf,
     ModalComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    AsyncPipe,
   ],
   styleUrls: ['./account-creation.component.css']
 })
@@ -90,13 +105,19 @@ export class AccountCreationComponent implements OnInit {
 
   selectedCompanyId: number | null = null;
   selectedAuthorizedPersonnelId: number | null = null;
-  private allowedActivityCodes: string[] = [
+  public allowedActivityCodes: string[] = [
     "10.01", "62.01", "5.1", "62.09", "56.1", "86.1", "90.02",
     "1.11", "1.13", "13.1", "24.1", "24.2", "41.1", "41.2", "42.11",
     "42.12", "42.13", "42.21", "42.22", "7.1", "7.21", "8.11", "8.92",
     "47.11", "53.1", "53.2", "85.1", "85.2", "86.21", "86.22", "86.9",
     "84.12", "90.01", "90.04", "93.11", "93.13", "93.19", "26.11", "27.12", "29.1"
   ];
+
+  filteredActivityCodes!: Observable<string[]>;
+
+  get activityCodeControl(): FormControl<string> {
+    return this.accountForm.get('activityCode') as FormControl<any>;
+  }
   constructor(
     private fb: FormBuilder,
     private userService: ClientService,
@@ -185,6 +206,12 @@ export class AccountCreationComponent implements OnInit {
         }
       }
     });
+
+
+    this.filteredActivityCodes = this.accountForm.get('activityCode')!.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterActivityCodes(value))
+    );
   }
 
   navigateToRegisterUser() {
@@ -560,5 +587,12 @@ export class AccountCreationComponent implements OnInit {
     const today = new Date();
     const inputDate = new Date(control.value);
     return inputDate < today ? null : { invalidDate: 'Birthdate must be in the past' };
+  }
+
+  private _filterActivityCodes(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.allowedActivityCodes.filter(code =>
+      code.toLowerCase().includes(filterValue)
+    );
   }
 }
